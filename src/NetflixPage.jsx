@@ -67,7 +67,8 @@ class NetflixPage extends React.Component{
       SeasonWiseEpisodeData:[],
       sortByWhat:["Episode", "Name"],
       sortByDefaultValue:"Episode",
-      episodeSearch:""
+      episodeSearch:"",
+      searchOptions:""
   }
 }
 //for of : to iterate object
@@ -130,14 +131,21 @@ handleSeasonChange=(e)=>{
   //we are not setting the below value with seasonNo and instead we are using
   //e.target.value for fetching the selected season no as setState don't set the value immediately
   this.setState({isLoading:true,function () {
-    console.log(this.state.value)}})
+    }})
   //now we want the seasons to be filtered according to e.target.value
   let tempSeasonArr=[]
-  for (const season of this.state.data._embedded.episodes) {
-    if(season["season"]==e.target.value){
-      tempSeasonArr.push(season)
-    }
-  }
+  // for (const season of this.state.data._embedded.episodes) {
+  //   if(season["season"]==e.target.value){
+  //     tempSeasonArr.push(season)
+  //   }
+  // }
+  
+
+  tempSeasonArr = this.state.data._embedded.episodes.filter((ep)=>
+                  {return ep["season"] == e.target.value})
+
+
+  this.setState({searchOptions:tempSeasonArr})
   this.setState({SeasonWiseEpisodeData:tempSeasonArr})
   this.setState({isLoading:false})
 }
@@ -196,6 +204,7 @@ handleSortingOrderChange=(e)=>{
                         .filter((ep)=>{return ep.name == value} );
     }
     this.setState({SeasonWiseEpisodeData:searchedEpisode})
+    
   }
 
   render(){
@@ -240,13 +249,12 @@ handleSortingOrderChange=(e)=>{
                    disableClearable
                    sx={{ width: "20vw"}}
                    onChange={(event, newValue) => {
-                    console.log(event,newValue)
                     this.handleEpisodeSelect(newValue)
                   }}
-                  value={this.state.episodeSearch}
-
-                   //value={this.state.episodeSearch}
+                  value={this.state.episodeSearch}                  
                    options={this.state.SeasonWiseEpisodeData.map((option) => option.name)}
+                   //options={this.state.searchOptions.map((option) => option.name)}
+                   
                    renderInput={(params) => (
                     <TextField
                       {...params}
